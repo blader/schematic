@@ -1,4 +1,4 @@
-# reverse-engineer-spec
+# schematic
 
 A skill that reverse engineers a detailed product and technical specification from a git branch's implementation.
 
@@ -15,14 +15,7 @@ Produces a structured markdown spec covering problem statement, product requirem
 ### Claude Code
 
 ```bash
-# Clone into Claude Code's skill directory
-git clone https://github.com/blader/reverse-engineer-spec.git ~/.claude/skills/reverse-engineer-spec
-```
-
-Or if you already have a skills directory that's a git repo, add it as a subtree or just copy the files:
-
-```bash
-cp -r reverse-engineer-spec ~/.claude/skills/reverse-engineer-spec
+git clone https://github.com/blader/schematic.git ~/.claude/skills/schematic
 ```
 
 Restart Claude Code to pick up the new skill.
@@ -30,14 +23,13 @@ Restart Claude Code to pick up the new skill.
 ### Codex
 
 ```bash
-# Clone into Codex's skill directory
-git clone https://github.com/blader/reverse-engineer-spec.git ~/.codex/skills/reverse-engineer-spec
+git clone https://github.com/blader/schematic.git ~/.codex/skills/schematic
 ```
 
 Or use the built-in skill installer:
 
 ```
-Install the skill from github.com/blader/reverse-engineer-spec
+Install the skill from github.com/blader/schematic
 ```
 
 Restart Codex to pick up the new skill.

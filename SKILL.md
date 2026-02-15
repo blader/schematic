@@ -1,5 +1,5 @@
 ---
-name: reverse-engineer-spec
+name: schematic
 description: |
   Reverse engineer a detailed product and technical specification document from a git branch's
   implementation. Use when: (1) a branch has shipped or is in-progress and needs documentation,
