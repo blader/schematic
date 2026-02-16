@@ -9,8 +9,8 @@ description: |
   branch does". Produces a structured markdown spec covering problem statement, product requirements,
   architecture, technical design, file inventories, testing strategy, rollout plan, and risks.
 author: Codex
-version: 1.0.0
-date: 2026-02-15
+version: 1.1.0
+date: 2026-02-16
 tags: [documentation, git, branch-analysis, spec, reverse-engineering]
 ---
 
@@ -46,7 +46,15 @@ git diff --stat <base>...HEAD
 
 # 3. Count the scale
 git diff --stat <base>...HEAD | tail -1
+
+# 4. Estimate diff token budget (chars / 4 ≈ tokens)
+git diff <base>...HEAD | wc -c
 ```
+
+**Agent scaling by token budget:**
+- **<50k tokens** → single agent (read all diffs directly)
+- **50k–200k tokens** → 2–3 agents
+- **200k+ tokens** → 3–4 agents, max ~150k tokens per agent
 
 From the diff stats, categorize files into groups:
 - **Core implementation** (new modules, business logic)
@@ -59,6 +67,11 @@ From the diff stats, categorize files into groups:
 
 Launch 2-4 parallel exploration agents, each focused on a different file group. This is
 critical for efficiency — reading 50+ files sequentially is too slow.
+
+**Model allocation:** Use `subagent_type: "Explore"` with `model: "sonnet"` for all
+exploration agents. Sonnet handles file reading and analysis (best cost/capability ratio).
+The orchestrating model (Opus) plans assignments, synthesizes reports, and infers product
+motivation — it should never read diff files directly.
 
 **Agent 1: Core Implementation**
 - All new files (the heart of the feature)
@@ -87,8 +100,8 @@ Each agent prompt should ask for:
 After agents return, diff the analyzed files against the full file list:
 
 ```bash
-# List all non-test changed files
-git diff --stat <base>...HEAD -- '*.ts' '*.tsx' | awk '{print $1}' | sort
+# List all changed files (language-agnostic)
+git diff --name-only <base>...HEAD | sort
 
 # Show small diffs for any files not yet analyzed
 git diff <base>...HEAD -- <uncovered-files>
@@ -128,10 +141,12 @@ What is and isn't included.
 
 ## 4. Architecture
 ### 4.1 System Diagram
-ASCII diagram showing component relationships and data flow.
+Mermaid `graph TB` diagram showing component relationships and data flow.
+(Mermaid renders natively on GitHub/GitLab — prefer over ASCII.)
 
 ### 4.2 Data Lifecycle
-Step-by-step flow from initial state through steady state.
+Mermaid `sequenceDiagram` or step-by-step description showing flow
+from initial state through steady state.
 
 ## 5. Technical Design
 Subsections for each major design decision:
