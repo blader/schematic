@@ -1,5 +1,5 @@
 ---
-name: schematic
+name: "schematic"
 description: |
   Reverse engineer a detailed product and technical specification document from a git branch's
   implementation. Use when: (1) a branch has shipped or is in-progress and needs documentation,
@@ -8,10 +8,11 @@ description: |
   (5) user asks to "analyze this branch", "write a spec from the code", or "document what this
   branch does". Produces a structured markdown spec covering problem statement, product requirements,
   architecture, technical design, file inventories, testing strategy, rollout plan, and risks.
-author: Codex
-version: 1.0.0
-date: 2026-02-15
-tags: [documentation, git, branch-analysis, spec, reverse-engineering]
+metadata:
+  author: "Codex"
+  version: "1.0.0"
+  date: "2026-02-15"
+  tags: "documentation, git, branch-analysis, spec, reverse-engineering"
 ---
 
 # Reverse Engineer Spec from Branch Implementation
