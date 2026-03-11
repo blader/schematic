@@ -48,7 +48,27 @@ git diff --stat <base>...HEAD
 git diff --stat <base>...HEAD | tail -1
 ```
 
-From the diff stats, categorize files into groups:
+**Hitchhiker commit detection (CRITICAL)**: Before proceeding, check whether the branch contains commits from other PRs that were separately merged to the target branch. This is common on un-rebased branches.
+
+```bash
+# Get PR commits from GitHub (if a PR exists)
+BRANCH_NAME=$(git branch --show-current)
+ALL_COMMITS=$(git log --oneline <base>..HEAD | wc -l)
+PR_SHAS=$(gh pr list --head "$BRANCH_NAME" --json commits --jq '.[0].commits[].oid' 2>/dev/null)
+PR_COMMIT_COUNT=$(echo "$PR_SHAS" | grep -c . 2>/dev/null || echo 0)
+
+# If counts differ, scope to PR-only files
+if [ -n "$PR_SHAS" ] && [ "$PR_COMMIT_COUNT" -lt "$ALL_COMMITS" ]; then
+  echo "HITCHHIKER COMMITS: $ALL_COMMITS on branch, $PR_COMMIT_COUNT in PR"
+  # Get files touched ONLY by PR commits
+  PR_FILES=$(for sha in $PR_SHAS; do git diff-tree --no-commit-id --name-only -r "$sha"; done | sort -u)
+  # Use: git diff <base>...HEAD -- $PR_FILES (simulates post-rebase diff)
+fi
+```
+
+When hitchhiker commits are detected, use `git diff <base>...HEAD -- <PR_FILES>` for all subsequent analysis. State this scoping in the output. When not detected, use the full diff.
+
+From the diff stats (scoped if needed), categorize files into groups:
 - **Core implementation** (new modules, business logic)
 - **Integration points** (modified selectors, reducers, hooks, components)
 - **Tests** (unit tests, integration tests, e2e tests)
